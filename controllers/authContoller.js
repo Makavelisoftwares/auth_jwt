@@ -12,15 +12,21 @@ const login_post=async(req,res,next)=>{
     const {username,password}=req.body;
     try {
         const user=await users.findOne({where:{username}});
-        const token=createToken(user.id);
-        res.cookie('authcookie',token,{httpOnly:true});
-        next()
+        
         if(user){
+            const token=createToken(user.id);
+            res.cookie('authcookie',token,{httpOnly:true});
+            next()
             const validatePassword=await bcrypt.compare(password,user.password);
             if(validatePassword){
-                return res.status(200).json('logged in')
+                res.send('logged in');
+            }else{
+                res.status(400).json('invalid password')
             }
             next()
+        }else{
+           res.status(400).json('invalid username');
+           next();
         }
     } catch (error) {
         res.status(400).json('failed to login');
