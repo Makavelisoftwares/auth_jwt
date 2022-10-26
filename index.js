@@ -7,6 +7,7 @@ const bodyParser=require('body-parser');
 const morgan=require('morgan');
 const helmet=require('helmet');
 const {sequelize}=require('./models');
+const port=5000;
 
 
 // using the middlewares and setting the view engine  
@@ -18,3 +19,15 @@ app.use(helmet());
 app.use(morgan('combined'));
 app.use(express.static('public'));
 app.set('view engine','ejs');
+
+
+// connecting to mysql database 
+sequelize.authenticate()
+.then(()=>{
+    app.listen(port,()=>{
+        console.log(`listening request at port http://localhost:${port}`)
+    })
+
+    console.log('connected to mysql database')
+})
+.catch((err)=>console.log(err))
