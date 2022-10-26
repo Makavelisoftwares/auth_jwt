@@ -5,7 +5,27 @@ const bcrypt=require('bcrypt');
 
 
 const createToken=(id)=>{
-    jwt.sign({id},'secret');
+    return jwt.sign({id},'secret');
+}
+
+const login_post=async(req,res,next)=>{
+    const {username,password}=req.body;
+    try {
+        const user=await users.findOne({where:{username}});
+        const token=createToken(user.id);
+        res.cookie('authcookie',token,{httpOnly:true});
+        next()
+        if(user){
+            const validatePassword=await bcrypt.compare(password,user.password);
+            if(validatePassword){
+                return res.status(200).json('logged in')
+            }
+            next()
+        }
+    } catch (error) {
+        res.status(400).json('failed to login');
+    }
+
 }
 
 const register_post=async(req,res,next)=>{
@@ -21,5 +41,6 @@ const register_post=async(req,res,next)=>{
 
 
 module.exports={
-    register_post
+    register_post,
+    login_post
 }
