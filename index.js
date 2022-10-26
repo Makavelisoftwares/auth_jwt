@@ -8,6 +8,7 @@ const morgan=require('morgan');
 const helmet=require('helmet');
 const {sequelize}=require('./models');
 const port=5000;
+const authRoutes=require('./routes/authRoute');
 
 
 // using the middlewares and setting the view engine  
@@ -31,3 +32,7 @@ sequelize.authenticate()
     console.log('connected to mysql database')
 })
 .catch((err)=>console.log(err))
+
+
+// using routes  
+app.use(authRoutes);
